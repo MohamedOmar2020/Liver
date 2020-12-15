@@ -8,7 +8,7 @@
 rm(list = ls())
 
 ## Set the working directory
-setwd("/Volumes/Macintosh/Research/Projects/Liver")
+#setwd("/Volumes/Macintosh/Research/Projects/Liver")
 
 
 ## Load necessary packages
