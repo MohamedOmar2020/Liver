@@ -235,6 +235,48 @@ prcPlot(datasetObject = LiverCancer, filterObject = New_filter2)
 
 violinPlot(filterObject = New_filter2, datasetObject = LiverCancer, labelColumn = "DiseaseStatus")
 
+##################################
+
+## Liver adenoma vs normal
+LiverAdenoma <- getGEOData("GSE88839")
+LiverAdenoma <- LiverAdenoma$originalData$GSE88839
+
+
+# Modifiy expression
+ExprLiverAdenoma <- LiverAdenoma$expr
+head(rownames(ExprLiverAdenoma))
+rownames(ExprLiverAdenoma) <- LiverAdenoma$keys
+dim(ExprLiverAdenoma)
+ExprLiverAdenoma <- ExprLiverAdenoma[!is.na(rownames(ExprLiverAdenoma)), ]
+
+
+# Modify pheno
+PhenoLiverAdenoma <- LiverAdenoma$pheno
+PhenoLiverAdenoma$DiseaseStatus <- PhenoLiverAdenoma$`disease state:ch1`
+PhenoLiverAdenoma$DiseaseStatus[PhenoLiverAdenoma$DiseaseStatus == "Non tumor liver"] <- "control"
+PhenoLiverAdenoma$DiseaseStatus[PhenoLiverAdenoma$DiseaseStatus == "Solid Tumor"] <- "case"
+PhenoLiverAdenoma$DiseaseStatus <- factor(PhenoLiverAdenoma$DiseaseStatus, levels = c("control","case"))
+table(PhenoLiverAdenoma$DiseaseStatus)
+
+#####
+all(rownames(PhenoLiverAdenoma) == colnames(ExprLiverAdenoma))
+# 
+LiverAdenoma$pheno <- PhenoLiverAdenoma
+LiverAdenoma$expr <- ExprLiverAdenoma
+LiverAdenoma$keys <- rownames(ExprLiverAdenoma)
+
+LiverAdenoma <- classFunction(LiverAdenoma, column = "DiseaseStatus", diseaseTerms = c("case"))
+
+## Test the signature
+
+#load("./Objs/filter.rda")
+
+## ROC Plot
+rocPlot(datasetObject = LiverAdenoma, filterObject = New_filter2)
+
+prcPlot(datasetObject = LiverAdenoma, filterObject = New_filter2)
+
+violinPlot(filterObject = New_filter2, datasetObject = LiverAdenoma, labelColumn = "DiseaseStatus")
 
 
 
